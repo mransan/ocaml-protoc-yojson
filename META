@@ -1,0 +1,5 @@
+version = "0.1.0"
+description = "ocaml-protoc JSON runtime library using YOJSON"
+archive(byte) = "pbrt-yojson.cma"
+archive(native) = "pbrt-yojson.cmxa"
+exists_if = "pbrt-yojson.cma"
