@@ -1,4 +1,5 @@
 LIB_NAME=pbrt-yojson
+OCAMLFIND_PKG_NAME=ocaml-protoc-yojson
 LIB_FILES+=pbrt_yojson
 LIB_DIR=src
 LIB_DEPS=ocaml-protoc,yojson

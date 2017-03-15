@@ -2,7 +2,7 @@ ifneq ($(LIB_DEPS),)
 	LIB_DEPS:=-pkgs $(LIB_DEPS)
 endif
 
-ifneq ($(LIB_DIR),)
+ifeq ($(LIB_DIR),)
 	LIB_DIR=src
 endif
 
@@ -34,11 +34,15 @@ LIB_INSTALL  +=$(LIB_BUILD)/$(LIB_NAME).cmxa
 LIB_INSTALL  +=$(LIB_BUILD)/$(LIB_NAME).cmxs
 LIB_INSTALL  +=$(LIB_BUILD)/$(LIB_NAME).a
 
+ifeq ($(OCAMLFIND_PKG_NAME),)
+	OCAMLFIND_PKG_NAME=$(LIB_NAME)
+endif
+
 lib.install:
-	ocamlfind install $(LIB_NAME) $(LIB_INSTALL)
+	ocamlfind install $(OCAMLFIND_PKG_NAME) $(LIB_INSTALL)
 
 lib.uninstall:
-	ocamlfind remove $(LIB_NAME)
+	ocamlfind remove $(OCAMLFIND_PKG_NAME)
 
 clean:
 	$(OCB) -clean
