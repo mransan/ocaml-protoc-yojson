@@ -21,5 +21,5 @@ depends: [
   "ocamlfind"  {build}
   "ocamlbuild" {build}
   "ocaml-protoc"
-  yojson
+  "yojson"
 ]

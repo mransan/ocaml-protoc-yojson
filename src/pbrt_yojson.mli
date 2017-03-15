@@ -13,6 +13,9 @@ module Encoder : sig
   val to_json : t -> json
   (** [to_json encoder] returns the Yojson value of the encoder *)
 
+  val to_string : t -> string 
+  (** [to_string encoder] return the JSON string. For more formatting
+      option once can use Yojson module instead *)
 end
 
 (** Protobuf Runtime signature with Yojson type *)
