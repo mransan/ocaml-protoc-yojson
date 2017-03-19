@@ -11,7 +11,8 @@ test: gen
 	export OCAMLRUNPARAM="b" && ./message_test.native 
 
 gen:
-	ocaml-protoc -json -ml_out tests tests/message.proto
+	ocaml-protoc -json -ml_out tests tests/pet.proto
+	ocaml-protoc -json -ml_out tests -I tests tests/message.proto
 
 doc-gen:
 	$(OCB) $(LIB_DIR)/$(LIB_NAME).docdir/index.html

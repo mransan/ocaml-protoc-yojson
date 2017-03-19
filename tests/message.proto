@@ -1,13 +1,6 @@
 syntax = "proto3";
 
-message Pet {
-  enum Type {
-    DOG = 0; 
-    CAT = 1;
-  } 
-  Type type = 1; 
-  string name = 2;
-}
+import "pet.proto";
 
 message Residence {
   message House { }
