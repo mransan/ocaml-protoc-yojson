@@ -46,6 +46,9 @@ module Encoder = struct
 
   let to_json t = 
     `Assoc !t
+  
+   let to_string t = 
+     t |> to_json |> Basic.to_string
 end 
 
 module type Decoder_sig = 

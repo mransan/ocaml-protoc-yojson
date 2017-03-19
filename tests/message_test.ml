@@ -29,8 +29,7 @@ let () =
   JsonEncoder.encode_person person encoder; 
   let json_str = 
     encoder 
-    |> Pbrt_yojson.Encoder.to_json 
-    |> Yojson.Basic.to_string 
+    |> Pbrt_yojson.Encoder.to_string
   in
   print_endline "Json value:"; 
   print_endline json_str; 
