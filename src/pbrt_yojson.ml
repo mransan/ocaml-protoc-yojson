@@ -1,95 +1,82 @@
-open Yojson
+module E = struct
 
-type json = Basic.json 
+  type error = 
+    | Unexpected_json_type of string * string  
+    | Malformed_variant of string  
 
-module type Encoder_sig = 
-    Pbrt_json.Encoder_sig with type t = (string * json) list ref
+  exception Failure of error 
 
-module Encoder = struct
+  let unexpected_json_type record_name field_name = 
+    raise (Failure (Unexpected_json_type (record_name, field_name)))
 
-  type t = (string * json) list ref 
+  let malformed_variant variant_name = 
+    raise (Failure (Malformed_variant variant_name)) 
 
-  let empty () = ref [] 
+  let string_of_error = function
+    | Unexpected_json_type (record_name, field_name) -> 
+      Printf.sprintf "Unexpected json type (record name:%s, field_name:%s)"
+        record_name field_name 
+    | Malformed_variant variant_name ->
+      Printf.sprintf "Malformed variant (variant name: %s)" variant_name
 
-  let set_null t key = 
-    t := (key, `Null) :: !t 
-
-  let set_string t key value = 
-    t := (key, `String value) :: !t
+  let () =
+    Printexc.register_printer (fun exn ->
+      match exn with
+      | Failure e -> Some (string_of_error e)
+      | _ -> None
+      )
   
-  let set_float t key value = 
-    t := (key, `Float value) :: !t
-  
-  let set_int t key value = 
-    t := (key, `Int value) :: !t
-  
-  let set_bool t key value = 
-    t := (key, `Bool value) :: !t
-  
-  let set_object t key value = 
-    t := (key, `Assoc !value) :: !t
-
-  let set_string_list t key value = 
-    t := (key, `List (List.map (fun v -> `String v) value)) :: !t
-  
-  let set_float_list t key value = 
-    t := (key, `List (List.map (fun v -> `Float v) value)) :: !t
-  
-  let set_int_list t key value = 
-    t := (key, `List (List.map (fun v -> `Int v) value)) :: !t
-  
-  let set_bool_list t key value = 
-    t := (key, `List (List.map (fun v -> `Bool v) value)) :: !t
-  
-  let set_object_list t key value = 
-    t := (key, `List (List.map (fun v -> `Assoc !v) value)) :: !t
-
-  let to_json t = 
-    `Assoc !t
-  
-   let to_string t = 
-     t |> to_json |> Basic.to_string
 end 
 
-module type Decoder_sig = 
-  Pbrt_json.Decoder_sig with type t = (string * json) list ref 
+let int32 v record_name field_name = 
+  match v with
+  | `String v -> Int32.of_string v 
+  | `Float f -> Int32.of_float f 
+  | `Int i -> Int32.of_int i 
+  | `Null -> 0l 
+  | _ -> E.unexpected_json_type record_name field_name  
 
-module Decoder = struct 
+let float v record_name field_name = 
+  match v with
+  | `String v -> float_of_string v 
+  | `Float f -> f 
+  | `Int i -> float_of_int i 
+  | `Null -> 0.0 
+  | _ -> E.unexpected_json_type record_name field_name  
 
-  type t = (string * json) list ref 
+let int64 v record_name field_name = 
+  match v with
+  | `String v -> Int64.of_string v 
+  | `Float f -> Int64.of_float f 
+  | `Int i -> Int64.of_int i 
+  | `Null -> 0L 
+  | _ -> E.unexpected_json_type record_name field_name  
 
-  let of_json = function
-    | `Assoc o -> Some (ref o) 
-    | _ -> None 
+let int v record_name field_name = 
+  match v with
+  | `String v -> int_of_string v 
+  | `Float f -> int_of_float f 
+  | `Int i -> i 
+  | `Null -> 0 
+  | _ -> E.unexpected_json_type record_name field_name  
 
-  let of_string s = 
-    try 
-      Basic.from_string s |> of_json  
-    with _ -> None
-  
-  type value = 
-    | String of string 
-    | Float of float 
-    | Int of int 
-    | Object of t 
-    | Array_as_array of value array 
-    | Bool of bool 
-    | Null
+let string v record_name field_name = 
+  match v with
+  | `String v -> v 
+  | `Null -> ""
+  | _ -> E.unexpected_json_type record_name field_name
 
-  let rec map = function
-    | `Null -> Null 
-    | `Bool b -> Bool b 
-    | `Int i -> Int i 
-    | `Float f -> Float f 
-    | `String s -> String s 
-    | `Assoc a -> Object (ref a)
-    | `List l -> Array_as_array (List.map map l |> Array.of_list)  
+let bool v record_name field_name = 
+  match v with
+  | `Bool b -> b 
+  | `Null -> false
+  | _ -> E.unexpected_json_type record_name field_name 
 
-  let key t = 
-    match !t with
-    | [] -> None
-    | (key, value)::tl -> begin
-      t := tl; 
-      Some (key, map value)
-    end
-end 
+let bytes _ record_name field_name = 
+  E.unexpected_json_type record_name field_name
+
+let make_bool v = `Bool  v
+let make_int v = `Int  v
+let make_float v = `Float  v
+let make_string v = `String  v
+let make_list v = `List v

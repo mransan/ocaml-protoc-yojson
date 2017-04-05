@@ -1,43 +1,37 @@
-type json = Yojson.Basic.json 
-(** type alias for the Yojson type used throughout this library *)
+(** Protobuf JSON encoding runtime *)
 
-(** Protobuf Runtime signature with Yojson type *)
-module type Encoder_sig = Pbrt_json.Encoder_sig 
-  with type t = (string * json) list ref
+(** All exception which could be raised by the generated JSON encoder
+    and decode function *)
+module E : sig 
+  type error = 
+    | Unexpected_json_type of string * string  
+    | Malformed_variant of string  
 
-(** Encoder module to implement the required signature from Pbrt_json with
-    extra function to make it easier to use *)
-module Encoder : sig 
-  include Encoder_sig 
+  exception Failure of error
+  (** Decoding/Encoding failure *)
 
-  val to_json : t -> json
-  (** [to_json encoder] returns the Yojson value of the encoder *)
+  val unexpected_json_type : string -> string -> 'a
+  (** [unexpected_json_type record_name field_name] raises 
+      [Failure (Unexpected_json_type (record_name, field_name))] *)
 
-  val to_string : t -> string 
-  (** [to_string encoder] return the JSON string. For more formatting
-      option once can use Yojson module instead *)
-end
+  val malformed_variant : string -> 'a
+  (** [malformed_variant variant_name] raise 
+      [Failure (Malformed_variant variant_name)] *)
+end 
 
-(** Protobuf Runtime signature with Yojson type *)
-module type Decoder_sig = Pbrt_json.Decoder_sig 
-  with type t = (string * json) list ref 
+(** Helper module for the generated code for common 
+    functionality *)
+  
+val string : Yojson.Basic.json -> string -> string -> string 
+val float : Yojson.Basic.json -> string -> string -> float 
+val int32 : Yojson.Basic.json -> string -> string -> int32 
+val int64 : Yojson.Basic.json -> string -> string -> int64 
+val int : Yojson.Basic.json -> string -> string -> int 
+val bool : Yojson.Basic.json -> string -> string -> bool
+val bytes : Yojson.Basic.json -> string -> string -> bytes 
 
-(** Encoder module to implement the required signature from Pbrt_json with
-    extra function to make it easier to use *)
-module Decoder : sig 
-  include Decoder_sig
-
-  val of_json : json -> t option
-  (** [of_json json] returns an encoder value from a Yojson value. If the 
-      Yojson value is not a JSON object then [None] is returned since 
-      protobuf serialization always starts with an object (ie protobuf 
-      message) *)
-
-  val of_string : string -> t option 
-  (** [of_string s] returns an encoder from a JSON string. [None]
-      if an error occured or the JSON value is not an object. 
-      
-      This is just provided as a convenience, not that a lot of error 
-      details are not exposed. For more details use Yojson functions
-      directly. *)
-end
+val make_bool : bool -> Yojson.Basic.json
+val make_int : int -> Yojson.Basic.json
+val make_float : float -> Yojson.Basic.json 
+val make_string : string -> Yojson.Basic.json 
+val make_list : Yojson.Basic.json list -> Yojson.Basic.json 
