@@ -22,16 +22,16 @@ end
 (** Helper module for the generated code for common 
     functionality *)
   
-val string : Yojson.Basic.json -> string -> string -> string 
-val float : Yojson.Basic.json -> string -> string -> float 
-val int32 : Yojson.Basic.json -> string -> string -> int32 
-val int64 : Yojson.Basic.json -> string -> string -> int64 
-val int : Yojson.Basic.json -> string -> string -> int 
-val bool : Yojson.Basic.json -> string -> string -> bool
-val bytes : Yojson.Basic.json -> string -> string -> bytes 
+val string : Yojson.Basic.t -> string -> string -> string
+val float : Yojson.Basic.t -> string -> string -> float
+val int32 : Yojson.Basic.t -> string -> string -> int32
+val int64 : Yojson.Basic.t -> string -> string -> int64
+val int : Yojson.Basic.t -> string -> string -> int
+val bool : Yojson.Basic.t -> string -> string -> bool
+val bytes : Yojson.Basic.t -> string -> string -> bytes
 
-val make_bool : bool -> Yojson.Basic.json
-val make_int : int -> Yojson.Basic.json
-val make_float : float -> Yojson.Basic.json 
-val make_string : string -> Yojson.Basic.json 
-val make_list : Yojson.Basic.json list -> Yojson.Basic.json 
+val make_bool : bool -> Yojson.Basic.t
+val make_int : int -> Yojson.Basic.t
+val make_float : float -> Yojson.Basic.t
+val make_string : string -> Yojson.Basic.t
+val make_list : Yojson.Basic.t list -> Yojson.Basic.t
