@@ -72,11 +72,14 @@ let bool v record_name field_name =
   | `Null -> false
   | _ -> E.unexpected_json_type record_name field_name 
 
-let bytes _ record_name field_name = 
-  E.unexpected_json_type record_name field_name
+let bytes v record_name field_name =
+  string v record_name field_name
+  |> Base64.decode_exn
+  |> Bytes.of_string
 
 let make_bool v = `Bool  v
 let make_int v = `Int  v
 let make_float v = `Float  v
 let make_string v = `String  v
+let make_bytes s = make_string (s |> Bytes.to_string |> Base64.encode_exn ~pad:true)
 let make_list v = `List v

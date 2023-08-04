@@ -2,7 +2,7 @@ LIB_NAME=pbrt-yojson
 OCAMLFIND_PKG_NAME=ocaml-protoc-yojson
 LIB_FILES+=pbrt_yojson
 LIB_DIR=src
-LIB_DEPS=yojson
+LIB_DEPS=yojson,base64
 
 test:
 	$(OCB) unit_tests.native
